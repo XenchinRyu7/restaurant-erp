@@ -1,0 +1,21 @@
+spring:
+  application:
+    name: restaurant-erp
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/food_erp
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+
+  jpa:
+    hibernate:
+      ddl-auto: validate
+
+  flyway:
+    enabled: true
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
