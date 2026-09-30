@@ -3,24 +3,19 @@ spring:
     name: restaurant-erp
 
   datasource:
-    url: ${DB_URL:jdbc:h2:mem:food_erp;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE;DEFAULT_NULL_ORDERING=HIGH}
-    driverClassName: ${DB_DRIVER:org.h2.Driver}
-    username: ${DB_USERNAME:sa}
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/food_erp}
+    username: ${DB_USERNAME:postgres}
     password: ${DB_PASSWORD:}
 
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: validate
     open-in-view: false
     show-sql: false
 
   flyway:
-    enabled: ${FLYWAY_ENABLED:false}
-
-  h2:
-    console:
-      enabled: true
-      path: /h2-console
+    enabled: true
+    baseline-on-migrate: true
 
 server:
   port: 8080

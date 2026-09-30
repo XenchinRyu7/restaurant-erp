@@ -11,6 +11,8 @@ backend/target/
 # Environment & IDE
 .env
 .env.local
+backend/.env
+backend/.env.local
 .DS_Store
 .idea/
 *.log
