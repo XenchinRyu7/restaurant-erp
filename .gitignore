@@ -16,3 +16,4 @@ backend/.env.local
 .DS_Store
 .idea/
 *.log
+*.tsbuildinfo

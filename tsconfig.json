@@ -1,0 +1,18 @@
+{
+  "compilerOptions": {
+    "target": "ES2023",
+    "lib": ["ES2023", "DOM"],
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "allowImportingTsExtensions": true,
+    "skipLibCheck": true,
+    "jsx": "react-jsx",
+    "baseUrl": ".",
+    "paths": {
+      "@heroui/react": ["./frontend/node_modules/@heroui/react"],
+      "@heroui/*": ["./frontend/node_modules/@heroui/*"],
+      "*": ["./frontend/node_modules/*"]
+    }
+  },
+  "include": ["frontend/src/**/*"]
+}

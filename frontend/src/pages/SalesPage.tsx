@@ -1,13 +1,10 @@
 import React, { useState } from 'react';
 import {
-  Store,
   Plus,
   Eye,
   Truck,
   CheckCircle2,
-  Trash,
-  Calendar,
-  Building2
+  Trash
 } from 'lucide-react';
 import {
   Table,

@@ -3,13 +3,9 @@ import {
   Boxes,
   Truck,
   AlertTriangle,
-  Plus,
   Search,
-  Filter,
   ArrowDownToLine,
-  SlidersHorizontal,
-  CheckCircle2,
-  Building2
+  SlidersHorizontal
 } from 'lucide-react';
 import {
   Table,
@@ -98,7 +94,6 @@ export const InventoryPage: React.FC<InventoryPageProps> = ({
   const [adjustQty, setAdjustQty] = useState<number>(0);
   const [adjustNotes, setAdjustNotes] = useState('');
 
-  // Handle triggered PO receipt from Procurement
   useEffect(() => {
     if (preselectedPoForReceive) {
       setReceivePoId(preselectedPoForReceive.id);
@@ -114,7 +109,7 @@ export const InventoryPage: React.FC<InventoryPageProps> = ({
       onOpenReceive();
       if (onClearPreselectedPo) onClearPreselectedPo();
     }
-  }, [preselectedPoForReceive]);
+  }, [preselectedPoForReceive, warehouses, onOpenReceive, onClearPreselectedPo]);
 
   const handleOpenNewReceive = () => {
     setReceivePoId('');
@@ -259,20 +254,30 @@ export const InventoryPage: React.FC<InventoryPageProps> = ({
 
         <div className="flex items-center gap-3">
           {activeTab === 'stocks' && (
-            <Select
-              size="sm"
-              label="Warehouse"
-              className="w-52"
-              selectedKeys={[selectedWarehouse]}
-              onChange={(e) => setSelectedWarehouse(e.target.value || 'all')}
-            >
-              {[
-                { id: 'all', name: 'All Warehouses' },
-                ...warehouses,
-              ].map((w) => (
-                <SelectItem key={w.id}>{w.name}</SelectItem>
-              ))}
-            </Select>
+            <>
+              <Input
+                size="sm"
+                placeholder="Search stocks..."
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                startContent={<Search className="w-4 h-4 text-neutral-400" />}
+                className="w-48"
+              />
+              <Select
+                size="sm"
+                label="Warehouse"
+                className="w-52"
+                selectedKeys={[selectedWarehouse]}
+                onChange={(e) => setSelectedWarehouse(e.target.value || 'all')}
+              >
+                {[
+                  { id: 'all', name: 'All Warehouses' },
+                  ...warehouses,
+                ].map((w) => (
+                  <SelectItem key={w.id}>{w.name}</SelectItem>
+                ))}
+              </Select>
+            </>
           )}
 
           <Button

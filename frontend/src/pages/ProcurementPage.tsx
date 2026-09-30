@@ -1,15 +1,9 @@
 import React, { useState } from 'react';
 import {
-  ShoppingCart,
   Plus,
   Eye,
-  CheckCircle,
-  XCircle,
   Truck,
-  Trash,
-  Calendar,
-  User,
-  ArrowRight
+  Trash
 } from 'lucide-react';
 import {
   Table,
@@ -49,7 +43,7 @@ export const ProcurementPage: React.FC<ProcurementPageProps> = ({
   purchaseOrders,
   suppliers,
   products,
-  warehouses,
+  warehouses: _warehouses,
   onRefresh,
   onOpenReceive,
 }) => {

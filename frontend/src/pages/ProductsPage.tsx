@@ -1,13 +1,9 @@
 import React, { useState, useMemo } from 'react';
 import {
-  Package,
   Plus,
   Search,
   Edit2,
-  Trash2,
-  Filter,
-  CheckCircle2,
-  AlertCircle
+  Trash2
 } from 'lucide-react';
 import {
   Table,
