@@ -187,7 +187,7 @@ export const SalesPage: React.FC<SalesPageProps> = ({
       <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4">
         <Tabs
           selectedKey={selectedStatus}
-          onSelectionChange={(key) => setSelectedStatus(key as string)}
+          onSelectionChange={(key: React.Key) => setSelectedStatus(key as string)}
           size="sm"
           color="primary"
           variant="underlined"

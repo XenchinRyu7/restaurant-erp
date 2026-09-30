@@ -136,7 +136,7 @@ export const PartnersPage: React.FC<PartnersPageProps> = ({
       <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4">
         <Tabs
           selectedKey={selectedTab}
-          onSelectionChange={(key) => setSelectedTab(key as any)}
+          onSelectionChange={(key: React.Key) => setSelectedTab(key as any)}
           color="primary"
           variant="solid"
           size="sm"

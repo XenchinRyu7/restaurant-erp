@@ -227,7 +227,7 @@ export const InventoryPage: React.FC<InventoryPageProps> = ({
       <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4">
         <Tabs
           selectedKey={activeTab}
-          onSelectionChange={(key) => setActiveTab(key as any)}
+          onSelectionChange={(key: React.Key) => setActiveTab(key as any)}
           color="primary"
           variant="solid"
           size="sm"
