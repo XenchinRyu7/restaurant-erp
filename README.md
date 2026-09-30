@@ -1,0 +1,259 @@
+# 🍽️ Restaurant & Food Supply Chain ERP
+
+[![Backend CI](https://img.shields.io/badge/Spring%20Boot-4.1.1-brightgreen.svg)](https://spring.io/projects/spring-boot)
+[![Frontend](https://img.shields.io/badge/React-19.2%20%7C%20HeroUI%20%7C%20Tailwind%20v4-blue.svg)](https://heroui.com)
+[![Database](https://img.shields.io/badge/PostgreSQL-15%2B%20%7C%20Flyway-336791.svg)](https://flywaydb.org)
+[![Testing](https://img.shields.io/badge/Tests-BDD%20Feature%20Tests%20%26%20Vitest-success.svg)](#-testing)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+
+An enterprise-grade, end-to-end **Food & Restaurant Enterprise Resource Planning (ERP)** system built with a **Modular Monolith** architecture. Designed specifically for multi-branch restaurant chains, central kitchens, and cold storage logistics.
+
+---
+
+## 📑 Table of Contents
+- [Architecture Overview](#-architecture-overview)
+- [Key Features](#-key-features)
+- [Technology Stack](#-technology-stack)
+- [Project Structure](#-project-structure)
+- [Prerequisites](#-prerequisites)
+- [Getting Started](#-getting-started)
+- [Configuration (.env)](#-configuration-env)
+- [Testing](#-testing)
+- [API Reference](#-api-reference)
+- [License](#-license)
+
+---
+
+## 🏛️ Architecture Overview
+
+The system is structured as a **Modular Monolith**, ensuring strict domain separation, data consistency, and clear boundaries while keeping deployment simple:
+
+```
+[ Web Browser / Client ]
+           │
+           │  (REST API / JSON)
+           ▼
+[ React 19 + HeroUI + Tailwind v4 ]
+           │
+           │  (Reverse Proxy / Vite dev: :5173 -> :8080)
+           ▼
+┌─────────────────────────────────────────────────────────────┐
+│              Spring Boot 4 Modular Monolith                 │
+│                                                             │
+│  ┌──────────────┐   ┌──────────────┐   ┌─────────────────┐  │
+│  │ Master Data  │   │ Procurement  │   │  Inventory Log  │  │
+│  └──────┬───────┘   └──────┬───────┘   └────────┬────────┘  │
+│         │                  │                    │           │
+│  ┌──────┴───────┐   ┌──────┴───────┐   ┌────────┴────────┐  │
+│  │ Branch Sales │   │  Stock Mgmt  │   │ Exec Analytics  │  │
+│  └──────────────┘   └──────────────┘   └─────────────────┘  │
+└──────────────────────────────┬──────────────────────────────┘
+                               │ (JPA / Hibernate)
+                               ▼
+                 [ PostgreSQL Database / Flyway ]
+```
+
+---
+
+## ✨ Key Features
+
+1. **Master Data Catalog**:
+   - Product categories, perishable goods metadata, safety stock thresholds (`minStock`), standard purchase & retail prices.
+   - Multi-warehouse directory (Cold Storages, Central Kitchens, Dry Hubs).
+   - Partner management: Certified food suppliers and restaurant branches/franchisees.
+
+2. **Procurement Pipeline**:
+   - Purchase Order (PO) creation, unit pricing, itemized line items.
+   - Status approval lifecycle (`DRAFT` → `SUBMITTED` → `APPROVED` → `RECEIVED`).
+   - Direct integration into Goods Receiving inspection.
+
+3. **Real-Time Inventory Control**:
+   - Live on-hand stock levels tracked per warehouse.
+   - Automated stock increment upon Goods Receipt (`GR-...`) with audit logs.
+   - Stock opname / cycle count adjustments with delta calculation.
+   - Automatic low-stock safety breach alerts.
+   - Immutable audit trail (`IN_PURCHASE`, `OUT_SALES`, `ADJUSTMENT`).
+
+4. **Restaurant Branch Sales Operations**:
+   - Branch replenishment orders (`SO-...`).
+   - Order lifecycle tracking (`PENDING` → `CONFIRMED` → `PROCESSING` → `DELIVERED`).
+   - **Automatic Stock Deduction**: Delivering orders deducts inventory and logs `OUT_SALES` transactions in real-time.
+
+5. **Executive Analytics Dashboard**:
+   - Live KPIs: Total Stock Valuation, Procurement Spend, Gross Revenue.
+   - Fast summary of low-stock items requiring replenishment.
+   - Recent transaction audit feed.
+
+---
+
+## 💻 Technology Stack
+
+### Backend
+- **Language & Runtime**: Java 21 (LTS)
+- **Framework**: Spring Boot 4.1.1
+- **Database & Persistence**: PostgreSQL 15+, Spring Data JPA, Hibernate ORM
+- **Migrations**: Flyway (`V1__create_master_data.sql`, `V2__create_procurement_and_inventory.sql`)
+- **Security**: Spring Security (Stateless CORS-enabled architecture)
+- **Configuration**: Zero-dependency `.env` environment variable loader (`DotenvLoader.java`)
+- **Testing**: JUnit 5, MockMvc, AssertJ, In-Memory H2 integration test profile
+
+### Frontend
+- **Framework**: React 19 + TypeScript
+- **Build Tool**: Vite 8 with `@tailwindcss/vite`
+- **UI Component Library**: HeroUI (`@heroui/react` 2.8+)
+- **Styling**: Tailwind CSS v4 with custom theme tokens
+- **Icons & Motion**: Lucide React, Framer Motion
+- **Unit & Component Testing**: Vitest, React Testing Library, JSDOM
+
+---
+
+## 📂 Project Structure
+
+```
+restaurant-erp/
+├── backend/                               # Spring Boot Application
+│   ├── src/main/java/com/fooderp/backend/
+│   │   ├── analytics/                     # Dashboard KPI Aggregations
+│   │   ├── config/                        # SecurityConfig, DotenvLoader
+│   │   ├── inventory/                     # Stocks, Goods Receipts, Transactions
+│   │   ├── masterdata/                    # Products, Warehouses, Suppliers, Customers
+│   │   ├── procurement/                   # Purchase Orders & Line Items
+│   │   └── sales/                         # Branch Sales Orders & Fulfillment
+│   ├── src/main/resources/
+│   │   ├── application.yml                # Main configuration (PostgreSQL + .env)
+│   │   └── db/migration/                  # Flyway versioned SQL migrations
+│   └── src/test/java/                     # BDD Feature & Integration Test Suites
+│
+├── frontend/                              # Vite + React + HeroUI Application
+│   ├── src/
+│   │   ├── api/                           # Axios/Fetch API client bindings
+│   │   ├── components/                    # Sidebar, Navbar, Reusable UI
+│   │   ├── pages/                         # Dashboard, Procurement, Inventory, Sales, Master
+│   │   ├── types/                         # TypeScript interfaces (erp.ts)
+│   │   └── test/                          # Vitest component & UI feature tests
+│   ├── vite.config.ts                     # Vite + Tailwind v4 + Vitest setup
+│   └── package.json
+│
+├── .env.example                           # Sample environment configuration
+├── package.json                           # Root workspace definition
+├── tsconfig.json                          # Solution-style root TypeScript configuration
+└── LICENSE                                # MIT License
+```
+
+---
+
+## 🚀 Getting Started
+
+### Prerequisites
+- **Java**: JDK 21+ (`java -version`)
+- **Node.js**: v20+ (`node -v`, `npm -v`)
+- **PostgreSQL**: PostgreSQL 15 or higher running locally on port `5432`
+
+---
+
+### 1. Database Setup
+
+Create a PostgreSQL database named `food_erp`:
+```sql
+CREATE DATABASE food_erp;
+```
+
+---
+
+### 2. Environment Configuration
+
+Copy `.env.example` to `.env` in the root directory:
+```bash
+cp .env.example .env
+```
+
+Ensure the credentials match your PostgreSQL instance:
+```env
+DB_URL=jdbc:postgresql://localhost:5432/food_erp
+DB_USERNAME=postgres
+DB_PASSWORD=your_password_here
+PORT=8080
+```
+
+---
+
+### 3. Running the Backend
+
+From the `backend` directory:
+```powershell
+cd backend
+.\mvnw.cmd spring-boot:run
+```
+*(On Linux/macOS, use `./mvnw spring-boot:run`)*
+
+- Flyway will automatically execute migrations `V1` and `V2`.
+- `MasterDataSeeder` will populate sample products, warehouses, suppliers, and transactions.
+- Server starts at `http://localhost:8080`.
+
+---
+
+### 4. Running the Frontend
+
+From the `frontend` directory:
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+- Vite dev server will start at `http://localhost:5173`.
+- Open `http://localhost:5173` in your browser to access the ERP interface.
+
+---
+
+## 🧪 Testing
+
+The repository contains automated tests across both frontend and backend.
+
+### Backend Feature & BDD Tests
+Runs end-to-end slice tests with an isolated in-memory H2 database:
+```powershell
+cd backend
+.\mvnw.cmd test
+```
+**Test Scenarios Covered**:
+- `ProcurementAndInventoryFeatureTest`: PO creation → Supplier confirmation → Goods receiving → Warehouse stock increment → `IN_PURCHASE` audit log.
+- `SalesAndFulfillmentFeatureTest`: Branch order placement → Status progression → Stock deduction upon delivery → `OUT_SALES` audit log.
+- `MasterDataAndAnalyticsFeatureTest`: Full catalog queries, live stock valuation, and safety threshold alerts.
+
+### Frontend Component Tests
+Runs Vitest and React Testing Library:
+```bash
+cd frontend
+npm test
+```
+**Test Scenarios Covered**:
+- `ProcurementPage.test.tsx`: Validates HeroUI table rendering, status chips, modal trigger, and user interactions.
+
+---
+
+## 📡 API Reference
+
+| Module | Method | Endpoint | Description |
+|---|---|---|---|
+| **Analytics** | `GET` | `/api/analytics/dashboard` | Executive KPIs and financial metrics |
+| **Master Data** | `GET` | `/api/master-data/products` | Retrieve all active products |
+| **Master Data** | `GET` | `/api/master-data/warehouses` | Retrieve list of storage facilities |
+| **Master Data** | `GET` | `/api/master-data/suppliers` | Retrieve food suppliers directory |
+| **Master Data** | `GET` | `/api/master-data/customers` | Retrieve restaurant branches |
+| **Procurement** | `GET` | `/api/procurement/orders` | Retrieve purchase orders |
+| **Procurement** | `POST` | `/api/procurement/orders` | Create a new purchase order |
+| **Procurement** | `PATCH` | `/api/procurement/orders/{id}/status` | Update PO status (`APPROVED`, etc.) |
+| **Inventory** | `GET` | `/api/inventory/stocks` | On-hand stock per warehouse |
+| **Inventory** | `GET` | `/api/inventory/stocks/low` | Low safety-stock alerts |
+| **Inventory** | `POST` | `/api/inventory/receipts` | Process warehouse goods receipt |
+| **Inventory** | `POST` | `/api/inventory/stocks/adjust` | Manual stock opname adjustment |
+| **Sales** | `GET` | `/api/sales/orders` | Retrieve restaurant sales orders |
+| **Sales** | `POST` | `/api/sales/orders` | Create branch replenishment order |
+| **Sales** | `PATCH` | `/api/sales/orders/{id}/status` | Update SO status (`DELIVERED`, etc.) |
+
+---
+
+## 📄 License
+
+Distributed under the **MIT License**. See [LICENSE](LICENSE) for more information.
