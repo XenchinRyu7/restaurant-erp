@@ -1,2 +1,2 @@
 
-- [ ] add docker development
+- [x] add docker development

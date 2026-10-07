@@ -177,7 +177,20 @@ PORT=8080
 
 ---
 
-### 3. Running the Backend
+### 3. Running with Docker (alternative)
+
+Run the full stack (PostgreSQL 15 + backend + frontend) with Docker Compose:
+```bash
+docker compose up -d --build
+```
+
+- Frontend: http://localhost:5173 (Vite dev server, proxies `/api` to the backend container)
+- Backend API: http://localhost:8080
+- PostgreSQL: localhost:5432 (user `postgres`, password `postgres`, db `food_erp`, persisted in the `pgdata` volume)
+
+Flyway migrations and the seeder run automatically on backend startup.
+
+### 4. Running the Backend
 
 From the `backend` directory:
 ```powershell
@@ -192,7 +205,7 @@ cd backend
 
 ---
 
-### 4. Running the Frontend
+### 5. Running the Frontend
 
 From the `frontend` directory:
 ```bash
